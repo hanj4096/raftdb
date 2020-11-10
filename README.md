@@ -33,21 +33,21 @@ $GOPATH/bin/raftdb -id node03 -haddr raft-cluster-host03:8091 -raddr raft-cluste
 ## Reading and writing keys
 You can now set a key and read its value back:
 ```bash
-curl -XPOST raft-cluster-host01:8091/key -d '{"foo": "bar"}' -L
-curl -XGET raft-cluster-host01:8091/key/foo -L
+curl -X POST raft-cluster-host01:8091/key -d '{"foo": "bar"}' -L
+curl -X GET raft-cluster-host01:8091/key/foo -L
 ```
 
 You can now delete a key and its value:
 ```bash
-curl -XDELETE raft-cluster-host02:8091/key/foo -L
+curl -X DELETE raft-cluster-host02:8091/key/foo -L
 ```
 
 ### Three read consistency level
 You can now read the key's value by different read consistency level:
 ```bash
-curl -XGET raft-cluster-host02:8091/key/foo?level=stale
-curl -XGET raft-cluster-host02:8091/key/foo?level=default  -L
-curl -XGET raft-cluster-host02:8091/key/foo?level=consistent  -L
+curl -X GET raft-cluster-host02:8091/key/foo?level=stale
+curl -X GET raft-cluster-host02:8091/key/foo?level=default  -L
+curl -X GET raft-cluster-host02:8091/key/foo?level=consistent  -L
 ```
 
 
