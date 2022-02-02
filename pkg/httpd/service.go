@@ -11,7 +11,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/hanj4096/raftdb/store"
+	"raftdb/pkg/store"
 )
 
 // Store is the interface Raft-backed key-value stores must implement.

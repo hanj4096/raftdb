@@ -20,7 +20,7 @@ import (
 	"time"
 
 	"github.com/hashicorp/raft"
-	"github.com/hashicorp/raft-boltdb"
+	"github.com/hashicorp/raft-boltdb/v2"
 )
 
 var (
