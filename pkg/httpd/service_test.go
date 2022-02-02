@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"raftdb/pkg/store"
 	"strings"
 	"testing"
 )
@@ -15,9 +16,6 @@ import (
 func Test_NewServer(t *testing.T) {
 	store := newTestStore()
 	s := &testServer{New(":0", store)}
-	if s == nil {
-		t.Fatal("failed to create HTTP service")
-	}
 
 	if err := s.Start(); err != nil {
 		t.Fatalf("failed to start HTTP service: %s", err)
@@ -68,7 +66,7 @@ func newTestStore() *testStore {
 	}
 }
 
-func (t *testStore) Get(key string) (string, error) {
+func (t *testStore) Get(key string, lvl store.ConsistencyLevel) (string, error) {
 	return t.m[key], nil
 }
 
@@ -82,7 +80,15 @@ func (t *testStore) Delete(key string) error {
 	return nil
 }
 
-func (t *testStore) Join(nodeID, addr string) error {
+func (t *testStore) Join(nodeID, httpAddr, addr string) error {
+	return nil
+}
+
+func (t *testStore) LeaderAPIAddr() string {
+	return ""
+}
+
+func (t *testStore) SetMeta(key, value string) error {
 	return nil
 }
 
