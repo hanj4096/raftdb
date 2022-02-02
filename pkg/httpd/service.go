@@ -25,7 +25,7 @@ type Store interface {
 	// Delete removes the given key, via distributed consensus.
 	Delete(key string) error
 
-	// Join joins the node, identitifed by nodeID and reachable at addr, to the cluster.
+	// Join joins the node, identified by nodeID and reachable at addr, to the cluster.
 	Join(nodeID string, httpAddr string, addr string) error
 
 	LeaderAPIAddr() string
@@ -35,10 +35,9 @@ type Store interface {
 
 // Service provides HTTP service.
 type Service struct {
-	addr string
-	ln   net.Listener
-
+	ln    net.Listener
 	store Store
+	addr  string
 }
 
 // FormRedirect returns the value for the "Location" header for a 301 response.
@@ -86,7 +85,6 @@ func (s *Service) Start() error {
 // Close closes the service.
 func (s *Service) Close() {
 	s.ln.Close()
-	return
 }
 
 // ServeHTTP allows Service to serve HTTP requests.
@@ -267,7 +265,6 @@ func (s *Service) handleKeyRequest(w http.ResponseWriter, r *http.Request) {
 	default:
 		w.WriteHeader(http.StatusMethodNotAllowed)
 	}
-	return
 }
 
 // Addr returns the address on which the Service is listening

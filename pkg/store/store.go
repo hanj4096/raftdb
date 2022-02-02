@@ -20,7 +20,7 @@ import (
 	"time"
 
 	"github.com/hashicorp/raft"
-	"github.com/hashicorp/raft-boltdb/v2"
+	raftboltdb "github.com/hashicorp/raft-boltdb/v2"
 )
 
 var (
@@ -36,8 +36,6 @@ var (
 const (
 	retainSnapshotCount = 2
 	raftTimeout         = 10 * time.Second
-	applyTimeout        = 10 * time.Second
-	openTimeout         = 120 * time.Second
 	leaderWaitDelay     = 100 * time.Millisecond
 	appliedWaitDelay    = 100 * time.Millisecond
 )
@@ -59,15 +57,14 @@ const (
 
 // Store is a simple key-value store, where all changes are made via Raft consensus.
 type Store struct {
-	RaftDir  string
-	RaftBind string
-
 	mu sync.Mutex
 	m  map[string]string // The key-value store for the system.
 
-	raft *raft.Raft // The consensus mechanism
-
+	raft   *raft.Raft // The consensus mechanism
 	logger *log.Logger
+
+	RaftDir  string
+	RaftBind string
 }
 
 // New returns a new Store.
