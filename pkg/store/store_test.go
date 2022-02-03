@@ -9,15 +9,16 @@ import (
 
 // Test_StoreOpen tests that the store can be opened.
 func Test_StoreOpen(t *testing.T) {
-	s := New(false)
+	s := New()
+	if s == nil {
+		t.Fatalf("failed to create store")
+	}
+
 	tmpDir, _ := ioutil.TempDir("", "store_test")
 	defer os.RemoveAll(tmpDir)
 
 	s.RaftBind = "127.0.0.1:0"
 	s.RaftDir = tmpDir
-	if s == nil {
-		t.Fatalf("failed to create store")
-	}
 
 	if err := s.Open(false, "node0"); err != nil {
 		t.Fatalf("failed to open store: %s", err)
@@ -26,15 +27,16 @@ func Test_StoreOpen(t *testing.T) {
 
 // Test_StoreOpenSingleNode tests that a command can be applied to the log
 func Test_StoreOpenSingleNode(t *testing.T) {
-	s := New(false)
+	s := New()
+	if s == nil {
+		t.Fatalf("failed to create store")
+	}
+
 	tmpDir, _ := ioutil.TempDir("", "store_test")
 	defer os.RemoveAll(tmpDir)
 
 	s.RaftBind = "127.0.0.1:0"
 	s.RaftDir = tmpDir
-	if s == nil {
-		t.Fatalf("failed to create store")
-	}
 
 	if err := s.Open(true, "node0"); err != nil {
 		t.Fatalf("failed to open store: %s", err)
@@ -49,7 +51,7 @@ func Test_StoreOpenSingleNode(t *testing.T) {
 
 	// Wait for committed log entry to be applied.
 	time.Sleep(500 * time.Millisecond)
-	value, err := s.Get("foo")
+	value, err := s.Get("foo", Default)
 	if err != nil {
 		t.Fatalf("failed to get key: %s", err.Error())
 	}
@@ -63,7 +65,7 @@ func Test_StoreOpenSingleNode(t *testing.T) {
 
 	// Wait for committed log entry to be applied.
 	time.Sleep(500 * time.Millisecond)
-	value, err = s.Get("foo")
+	value, err = s.Get("foo", Default)
 	if err != nil {
 		t.Fatalf("failed to get key: %s", err.Error())
 	}
@@ -75,15 +77,16 @@ func Test_StoreOpenSingleNode(t *testing.T) {
 // Test_StoreInMemOpenSingleNode tests that a command can be applied to the log
 // stored in RAM.
 func Test_StoreInMemOpenSingleNode(t *testing.T) {
-	s := New(true)
+	s := New()
+	if s == nil {
+		t.Fatalf("failed to create store")
+	}
+
 	tmpDir, _ := ioutil.TempDir("", "store_test")
 	defer os.RemoveAll(tmpDir)
 
 	s.RaftBind = "127.0.0.1:0"
 	s.RaftDir = tmpDir
-	if s == nil {
-		t.Fatalf("failed to create store")
-	}
 
 	if err := s.Open(true, "node0"); err != nil {
 		t.Fatalf("failed to open store: %s", err)
@@ -98,7 +101,7 @@ func Test_StoreInMemOpenSingleNode(t *testing.T) {
 
 	// Wait for committed log entry to be applied.
 	time.Sleep(500 * time.Millisecond)
-	value, err := s.Get("foo")
+	value, err := s.Get("foo", Default)
 	if err != nil {
 		t.Fatalf("failed to get key: %s", err.Error())
 	}
@@ -112,7 +115,7 @@ func Test_StoreInMemOpenSingleNode(t *testing.T) {
 
 	// Wait for committed log entry to be applied.
 	time.Sleep(500 * time.Millisecond)
-	value, err = s.Get("foo")
+	value, err = s.Get("foo", Default)
 	if err != nil {
 		t.Fatalf("failed to get key: %s", err.Error())
 	}
