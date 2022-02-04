@@ -2,6 +2,7 @@ raftdb
 ======
 
 raftdb is a simple distributed key value store based on the Raft consensus protocol. It can be run on Linux, OSX, and Windows.
+(raftdb is a Raft consensus example for https://time.geekbang.org/column/article/215116 . It's inspired by https://github.com/otoolep/hraftd)
 
 ## Running raftdb
 *Building raftdb requires Go 1.9 or later. [gvm](https://github.com/moovweb/gvm) is a great tool for installing and managing your versions of Go.*
