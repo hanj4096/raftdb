@@ -11,6 +11,8 @@ import (
 	"os/signal"
 	"time"
 
+	"github.com/hashicorp/raft"
+
 	"raftdb/pkg/httpd"
 	"raftdb/pkg/store"
 )
@@ -76,7 +78,7 @@ func main() {
 	s.WaitForApplied(openTimeout)
 
 	// This may be a standalone server. In that case set its own metadata.
-	if err := s.SetMeta(nodeID, httpAddr); err != nil && err != store.ErrNotLeader {
+	if err := s.SetMeta(nodeID, httpAddr); err != nil && err != raft.ErrNotLeader {
 		// Non-leader errors are OK, since metadata will then be set through
 		// consensus as a result of a join. All other errors indicate a problem.
 		log.Fatalf("failed to SetMeta at %s: %s", nodeID, err.Error())

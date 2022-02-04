@@ -24,10 +24,6 @@ import (
 )
 
 var (
-	// ErrNotLeader is returned when a node attempts to execute a leader-only
-	// operation.
-	ErrNotLeader = errors.New("not leader")
-
 	// ErrOpenTimeout is returned when the Store does not apply its initial
 	// logs within the specified time.
 	ErrOpenTimeout = errors.New("timeout waiting for initial logs application")
@@ -241,7 +237,7 @@ func (s *Store) consistentRead() error {
 func (s *Store) Get(key string, lvl ConsistencyLevel) (string, error) {
 	if lvl != Stale {
 		if s.raft.State() != raft.Leader {
-			return "", ErrNotLeader
+			return "", raft.ErrNotLeader
 		}
 
 	}
@@ -260,7 +256,7 @@ func (s *Store) Get(key string, lvl ConsistencyLevel) (string, error) {
 // Set sets the value for the given key.
 func (s *Store) Set(key, value string) error {
 	if s.raft.State() != raft.Leader {
-		return ErrNotLeader
+		return raft.ErrNotLeader
 	}
 
 	c := &command{
@@ -280,7 +276,7 @@ func (s *Store) Set(key, value string) error {
 // Delete deletes the given key.
 func (s *Store) Delete(key string) error {
 	if s.raft.State() != raft.Leader {
-		return ErrNotLeader
+		return raft.ErrNotLeader
 	}
 
 	c := &command{

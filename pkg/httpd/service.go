@@ -11,6 +11,8 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/hashicorp/raft"
+
 	"raftdb/pkg/store"
 )
 
@@ -129,7 +131,7 @@ func (s *Service) handleJoin(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := s.store.Join(nodeID, httpAddr, raftAddr); err != nil {
-		if err == store.ErrNotLeader {
+		if err == raft.ErrNotLeader {
 			leader := s.store.LeaderAPIAddr()
 			if leader == "" {
 				http.Error(w, err.Error(), http.StatusServiceUnavailable)
@@ -187,7 +189,7 @@ func (s *Service) handleKeyRequest(w http.ResponseWriter, r *http.Request) {
 
 		v, err := s.store.Get(k, lvl)
 		if err != nil {
-			if err == store.ErrNotLeader {
+			if err == raft.ErrNotLeader {
 				leader := s.store.LeaderAPIAddr()
 				if leader == "" {
 					http.Error(w, err.Error(), http.StatusServiceUnavailable)
@@ -219,7 +221,7 @@ func (s *Service) handleKeyRequest(w http.ResponseWriter, r *http.Request) {
 		}
 		for k, v := range m {
 			if err := s.store.Set(k, v); err != nil {
-				if err == store.ErrNotLeader {
+				if err == raft.ErrNotLeader {
 					leader := s.store.LeaderAPIAddr()
 					if leader == "" {
 						http.Error(w, err.Error(), http.StatusServiceUnavailable)
@@ -245,7 +247,7 @@ func (s *Service) handleKeyRequest(w http.ResponseWriter, r *http.Request) {
 		}
 
 		if err := s.store.Delete(k); err != nil {
-			if err == store.ErrNotLeader {
+			if err == raft.ErrNotLeader {
 				leader := s.store.LeaderAPIAddr()
 				if leader == "" {
 					http.Error(w, err.Error(), http.StatusServiceUnavailable)
