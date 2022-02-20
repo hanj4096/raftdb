@@ -10,7 +10,7 @@ Starting and running a raftdb cluster is easy. Download raftdb like so:
 ```bash
 mkdir -p $GOPATH/src/github/hanj4096
 cd $GOPATH/src/github/hanj4096
-go get github.com/hanj4096/raftdb
+git clone github.com/hanj4096/raftdb
 ```
 
 Build raftdb like so:
