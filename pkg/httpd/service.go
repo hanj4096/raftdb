@@ -9,6 +9,7 @@ import (
 	"log"
 	"net"
 	"net/http"
+	"os"
 	"strings"
 
 	"github.com/hashicorp/raft"
@@ -40,6 +41,8 @@ type Service struct {
 	ln    net.Listener
 	store Store
 	addr  string
+
+	logger *log.Logger
 }
 
 // FormRedirect returns the value for the "Location" header for a 301 response.
@@ -55,8 +58,9 @@ func (s *Service) FormRedirect(r *http.Request, host string) string {
 // New returns an uninitialized HTTP service.
 func New(addr string, store Store) *Service {
 	return &Service{
-		addr:  addr,
-		store: store,
+		addr:   addr,
+		store:  store,
+		logger: log.New(os.Stderr, "[httpd] ", log.LstdFlags),
 	}
 }
 
@@ -77,7 +81,7 @@ func (s *Service) Start() error {
 	go func() {
 		err := server.Serve(s.ln)
 		if err != nil {
-			log.Fatalf("HTTP serve: %s", err)
+			s.logger.Fatalf("HTTP serve: %s", err)
 		}
 	}()
 
@@ -138,7 +142,6 @@ func (s *Service) handleJoin(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 			redirect := s.FormRedirect(r, leader)
-			//http.Redirect(w, r, redirect, http.StatusMovedPermanently)
 			http.Redirect(w, r, redirect, http.StatusTemporaryRedirect)
 			return
 		}
@@ -168,6 +171,7 @@ func (s *Service) handleKeyRequest(w http.ResponseWriter, r *http.Request) {
 	getKey := func() string {
 		parts := strings.Split(r.URL.Path, "/")
 		if len(parts) != 3 {
+			w.WriteHeader(http.StatusBadRequest)
 			return ""
 		}
 		return parts[2]
@@ -196,7 +200,6 @@ func (s *Service) handleKeyRequest(w http.ResponseWriter, r *http.Request) {
 					return
 				}
 				redirect := s.FormRedirect(r, leader)
-				//http.Redirect(w, r, redirect, http.StatusMovedPermanently)
 				http.Redirect(w, r, redirect, http.StatusTemporaryRedirect)
 				return
 			}
@@ -210,7 +213,9 @@ func (s *Service) handleKeyRequest(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		io.WriteString(w, string(b))
+		if _, err := io.WriteString(w, string(b)); err != nil {
+			s.logger.Printf("faile to WriteString: %v", err)
+		}
 
 	case "POST":
 		// Read the value from the POST body.
@@ -229,7 +234,6 @@ func (s *Service) handleKeyRequest(w http.ResponseWriter, r *http.Request) {
 					}
 
 					redirect := s.FormRedirect(r, leader)
-					//http.Redirect(w, r, redirect, http.StatusMovedPermanently)
 					http.Redirect(w, r, redirect, http.StatusTemporaryRedirect)
 					return
 				}
@@ -254,7 +258,6 @@ func (s *Service) handleKeyRequest(w http.ResponseWriter, r *http.Request) {
 					return
 				}
 				redirect := s.FormRedirect(r, leader)
-				//http.Redirect(w, r, redirect, http.StatusMovedPermanently)
 				http.Redirect(w, r, redirect, http.StatusTemporaryRedirect)
 				return
 			}
