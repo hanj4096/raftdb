@@ -35,7 +35,7 @@ func init() {
 	flag.StringVar(&joinAddr, "join", "", "Set join address, if any")
 	flag.StringVar(&nodeID, "id", "", "Node ID")
 	flag.Usage = func() {
-		fmt.Fprintf(os.Stderr, "Usage: %s [options] <raft-data-path> \n", os.Args[0])
+		fmt.Fprintf(os.Stderr, "usage: %s [options] <raft-data-path> \n", os.Args[0])
 		flag.PrintDefaults()
 	}
 }
@@ -44,17 +44,19 @@ func main() {
 	flag.Parse()
 
 	if flag.NArg() == 0 {
-		fmt.Fprintf(os.Stderr, "No Raft storage directory specified\n")
+		fmt.Fprintf(os.Stderr, "no raft storage directory specified\n")
 		os.Exit(1)
 	}
 
 	// Ensure Raft storage exists.
 	raftDir := flag.Arg(0)
 	if raftDir == "" {
-		fmt.Fprintf(os.Stderr, "No Raft storage directory specified\n")
+		fmt.Fprintf(os.Stderr, "no raft storage directory specified\n")
 		os.Exit(1)
 	}
-	os.MkdirAll(raftDir, 0700)
+	if err := os.MkdirAll(raftDir, 0700); err != nil {
+		log.Fatalf("failed to create dir: %s", err.Error())
+	}
 
 	s := store.New()
 	s.RaftDir = raftDir
