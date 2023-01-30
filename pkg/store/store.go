@@ -209,7 +209,7 @@ func (s *Store) WaitForAppliedIndex(idx uint64, timeout time.Duration) error {
 	}
 }
 
-// WaitForApplied waits for all Raft log entries to to be applied to the
+// WaitForApplied waits for all Raft log entries to be applied to the
 // underlying database.
 func (s *Store) WaitForApplied(timeout time.Duration) error {
 	if timeout == 0 {
